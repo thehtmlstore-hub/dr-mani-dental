@@ -15,11 +15,13 @@ for (const match of mediaSource.matchAll(/data:image\/(jpeg|png|webp|gif|svg\+xm
 const video = mediaSource.match(/<script type="application\/octet-stream" id="heroVideoData">([\s\S]*?)<\/script>/);
 if (!video) throw new Error('Missing embedded hero video');
 const data = Buffer.from(video[1], 'base64');
-fs.writeFileSync(path.join(out, 'assets', `hero-${digest(data)}.mp4`), data);
+// The page references this stable fallback path directly. Keep the original
+// bytes unchanged, but publish them at the path the runtime requests.
+fs.writeFileSync(path.join(out, 'assets', 'hero.mp4'), data);
 fs.writeFileSync(path.join(out, 'manidental2.html'), pageSource);
 for (const name of ['robots.txt', 'sitemap.xml']) fs.copyFileSync(path.join(__dirname, name), path.join(out, name));
 const page = fs.readFileSync(path.join(out, 'manidental2.html'), 'utf8');
-for (const match of page.matchAll(/assets\/(?:image|hero)-[\w.-]+/g)) {
+for (const match of page.matchAll(/assets\/(?:image)-[\w.-]+|assets\/hero\.mp4/g)) {
   if (!fs.existsSync(path.join(out, match[0]))) throw new Error(`Missing asset: ${match[0]}`);
 }
 console.log('Built static site with verified media, robots.txt and sitemap.xml');
