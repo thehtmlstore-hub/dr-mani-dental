@@ -1,28 +1,60 @@
-// Extract the clinic's existing published media without changing its bytes.
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
-const applySeo = require('./seo');
-const mediaSource = fs.readFileSync(path.join(__dirname, 'source/manidental2.html'), 'utf8');
-const pageSource = fs.readFileSync(path.join(__dirname, 'manidental2.html'), 'utf8');
-const out = path.join(__dirname, 'dist');
-fs.mkdirSync(path.join(out, 'assets'), { recursive: true });
-const digest = data => crypto.createHash('sha256').update(data).digest('hex').slice(0, 16);
-const extensions = { jpeg: 'jpg', png: 'png', webp: 'webp', gif: 'gif', 'svg+xml': 'svg' };
-for (const match of mediaSource.matchAll(/data:image\/(jpeg|png|webp|gif|svg\+xml);base64,([A-Za-z0-9+/=]+)/g)) {
-  const data = Buffer.from(match[2], 'base64');
-  fs.writeFileSync(path.join(out, 'assets', `image-${digest(data)}.${extensions[match[1]]}`), data);
+const applyHomepage = require('./homepage');
+const { origin } = require('./clinic');
+const { services } = require('./content');
+const { home } = require('./seo');
+const { allPages, draftArticles, render } = require('./pages');
+
+const root = __dirname;
+const out = path.join(root, 'dist');
+fs.rmSync(out, { recursive:true, force:true });
+fs.mkdirSync(path.join(out, 'assets'), { recursive:true });
+
+function asset(format, base64, name) {
+  const bytes = Buffer.from(base64, 'base64');
+  const hash = crypto.createHash('sha256').update(bytes).digest('hex').slice(0, 16);
+  const extension = format === 'jpeg' ? 'jpg' : format;
+  const file = name+'-'+hash+'.'+extension;
+  fs.writeFileSync(path.join(out, 'assets', file), bytes);
+  return '/assets/'+file;
 }
+
+const pageSource = fs.readFileSync(path.join(root, 'manidental2.html'), 'utf8');
+const mediaSource = fs.readFileSync(path.join(root, 'source/manidental2.html'), 'utf8');
 const video = mediaSource.match(/<script type="application\/octet-stream" id="heroVideoData">([\s\S]*?)<\/script>/);
-if (!video) throw new Error('Missing embedded hero video');
-const data = Buffer.from(video[1], 'base64');
-// The page references this stable fallback path directly. Keep the original
-// bytes unchanged, but publish them at the path the runtime requests.
-fs.writeFileSync(path.join(out, 'assets', 'hero.mp4'), data);
-const page = applySeo(pageSource, out);
-fs.writeFileSync(path.join(out, 'manidental2.html'), page);
-for (const name of ['robots.txt', 'sitemap.xml']) fs.copyFileSync(path.join(__dirname, name), path.join(out, name));
-for (const match of page.matchAll(/assets\/(?:image)-[\w.-]+|assets\/hero\.mp4/g)) {
-  if (!fs.existsSync(path.join(out, match[0]))) throw new Error(`Missing asset: ${match[0]}`);
+if (!video) throw new Error('Missing embedded video fallback');
+fs.writeFileSync(path.join(out, 'assets', 'hero.mp4'), Buffer.from(video[1], 'base64'));
+const homepage = applyHomepage(pageSource, out, services, asset);
+fs.writeFileSync(path.join(out, 'index.html'), homepage.page);
+
+const styles = pageSource.match(/<style>([\s\S]*?)<\/style>/)[1];
+fs.writeFileSync(path.join(out, 'page.css'), styles+'\n'+fs.readFileSync(path.join(root, 'page.css'), 'utf8'));
+
+const pages = allPages(homepage.profilePhoto);
+const routes = [home, ...pages];
+for (const page of pages) {
+  const file = path.join(out, page.path.replace(/^\/|\/$/g,'')+'.html');
+  fs.mkdirSync(path.dirname(file), { recursive:true });
+  fs.writeFileSync(file, render(page));
 }
-console.log('Built static site with verified media, robots.txt and sitemap.xml');
+const sitemap = [
+  '<?xml version="1.0" encoding="UTF-8"?>',
+  '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+  ...routes.filter(page=>!page.noindex).map(page=>`  <url><loc>${origin+page.path}</loc><lastmod>${page.lastmod}</lastmod></url>`),
+  '</urlset>',
+].join('\n')+'\n';
+fs.writeFileSync(path.join(out,'sitemap.xml'),sitemap);
+fs.copyFileSync(path.join(root,'robots.txt'),path.join(out,'robots.txt'));
+
+if (process.argv.includes('--review')) {
+  const review = path.join(root, 'review');
+  fs.mkdirSync(review, { recursive:true });
+  for (const article of draftArticles()) fs.writeFileSync(path.join(review, article.slug+'.html'), render(article));
+  const entries = [...routes, ...draftArticles()].map(({path,title,description,h1,noindex}, index) => ({
+    path, title, description, h1, status:index>=routes.length?'Draft, outside deployment':noindex?'Noindex':'Indexable',
+  }));
+  fs.writeFileSync(path.join(review, 'metadata.json'), JSON.stringify(entries,null,2)+'\n');
+}
+console.log(`Built ${routes.length} static pages including 404 and ${routes.filter(page=>!page.noindex).length} indexable URLs.`);
