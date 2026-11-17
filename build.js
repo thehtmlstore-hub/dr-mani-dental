@@ -2,6 +2,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
+const applySeo = require('./seo');
 const mediaSource = fs.readFileSync(path.join(__dirname, 'source/manidental2.html'), 'utf8');
 const pageSource = fs.readFileSync(path.join(__dirname, 'manidental2.html'), 'utf8');
 const out = path.join(__dirname, 'dist');
@@ -18,9 +19,9 @@ const data = Buffer.from(video[1], 'base64');
 // The page references this stable fallback path directly. Keep the original
 // bytes unchanged, but publish them at the path the runtime requests.
 fs.writeFileSync(path.join(out, 'assets', 'hero.mp4'), data);
-fs.writeFileSync(path.join(out, 'manidental2.html'), pageSource);
+const page = applySeo(pageSource, out);
+fs.writeFileSync(path.join(out, 'manidental2.html'), page);
 for (const name of ['robots.txt', 'sitemap.xml']) fs.copyFileSync(path.join(__dirname, name), path.join(out, name));
-const page = fs.readFileSync(path.join(out, 'manidental2.html'), 'utf8');
 for (const match of page.matchAll(/assets\/(?:image)-[\w.-]+|assets\/hero\.mp4/g)) {
   if (!fs.existsSync(path.join(out, match[0]))) throw new Error(`Missing asset: ${match[0]}`);
 }
