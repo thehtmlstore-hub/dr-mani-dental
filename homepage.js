@@ -89,6 +89,11 @@ function applyHomepage(source, out, services, asset) {
     .replace(/\.chapter h1\.ta-h/g, '.chapter h2.ta-h')
     .replace(/\.chapter h1(?![\w.-])/g, '.chapter .ta-h')
     .replace(/\.chapter h2(?![\w.-])/g, '.chapter h2:where(:not(.ta-h))')
+    .replace(/^\.rv\{opacity:0[^\n]*\}\r?\n\.rv\.in\{opacity:1;transform:none\}/m, `/* Scroll reveals enhance content that is already visible. */
+@media (prefers-reduced-motion: no-preference){
+  .rv.in:not(:focus-within){animation:rv-enter .8s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
+  @keyframes rv-enter{from{opacity:.65;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+}`)
     .replace('</style></head>', `.chapter h1.chip{font-family:inherit}
 .is-cinematic .chapter[data-ch="0"]{opacity:1;visibility:visible;transform:translateY(-50%)}
 @media (max-width:820px), (orientation:landscape) and (max-height:600px) and (max-width:1100px){
@@ -99,7 +104,7 @@ function applyHomepage(source, out, services, asset) {
     .replace(/href="#doctors"/g, 'href="/doctors/"')
     .replace(/  \/\* DOCTORS OVERLAY \*\/[\s\S]*?(?=  \/\* everything that must be hidden)/, '')
     .replace('  let docReturnFocus=null;\n', '')
-    .replace(/  const isDocsOpen=[\s\S]*?(?=  \/\* deep link: \/#doctors)/, `  const FOCUSABLE='a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])';
+    .replace(/  const isDocsOpen=[\s\S]*?(?=  \/\* REVEAL \*\/)/, `  const FOCUSABLE='a[href],button:not([disabled]),input,select,textarea,[tabindex]:not([tabindex="-1"])';
   addEventListener('keydown',e=>{
     if(e.key==='Escape'&&document.body.classList.contains('nav-open')){setNav(false);burger.focus();}
   });
