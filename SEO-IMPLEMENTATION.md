@@ -34,7 +34,7 @@ The supplied homepage description was 162 characters. The implemented 157-charac
 
 ## Mobile baseline
 
-[PageSpeed Insights baseline](https://pagespeed.web.dev/analysis/https-www-drmanisdentalkaraikudi-com/jo39yajbum?form_factor=mobile) reported Performance 32, SEO 100, LCP 53.1 seconds and CLS 0.71. The first deployed audit reported Performance 55 and SEO 92. It identified the hero card’s late layout switch and the nine “Learn more” labels. The follow-up fixes address both findings. The second deployed audit reached Performance 87 and SEO 100, with LCP 3.8 seconds and CLS 0.009. The final pass adds responsive WebP and non-blocking font stylesheets. The baseline contained no CrUX field data for INP. The lab sample is one run and may vary.
+[PageSpeed Insights baseline](https://pagespeed.web.dev/analysis/https-www-drmanisdentalkaraikudi-com/jo39yajbum?form_factor=mobile) reported Performance 32, SEO 100, LCP 53.1 seconds and CLS 0.71. The first deployed audit reported Performance 55 and SEO 92. It identified the hero card’s late layout switch and the nine “Learn more” labels. The follow-up fixes address both findings. The second deployed audit reached Performance 87 and SEO 100, with LCP 3.8 seconds and CLS 0.009. Responsive WebP and asynchronous fonts reduced first paint further. This run still waited for the full motion pack. The final pass uses the same encoded frames, with a small initial pack and a larger continuation pack fetched when the visitor scrolls into the hero. The baseline contained no CrUX field data for INP. The lab sample is one run and may vary.
 
 ## NEEDS CLIENT CONFIRMATION
 

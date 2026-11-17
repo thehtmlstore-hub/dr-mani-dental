@@ -17,7 +17,14 @@ function applyHomepage(source, out, services, asset) {
   const posterUrl = asset('webp', fs.readFileSync(path.join(__dirname,'source/dental-clinic-poster-1920.webp')).toString('base64'), 'dental-clinic-hero');
   const posterVariants = mobilePoster+' 1200w, '+posterUrl+' 1920w';
   const posterSizes = '(max-width: 820px) min(180vw, 900px), 100vw';
-  const packUrl = asset('js', Buffer.from('document.currentScript.heroPack=' + pack[1] + ';').toString('base64'), 'hero-frames');
+  const [,width,height,encodedFrames] = pack[1].match(/^\{width:(\d+),height:(\d+),proxy:"[\w+/=]+",frames:(\[[\s\S]*\])\}$/) || [];
+  const frames = encodedFrames && JSON.parse(encodedFrames.replace(/,\s*\]$/, ']'));
+  if (frames?.length !== 150) throw new Error('Unexpected hero frame pack');
+  const initialFrameCount = 12;
+  const bootFrames = frames.slice(0,initialFrameCount).concat(Array(frames.length-initialFrameCount).fill(null));
+  const frameAsset = (property, data, name) => asset('js', Buffer.from('document.currentScript.'+property+'='+JSON.stringify(data)+';').toString('base64'), name);
+  const packUrl = frameAsset('heroPack', { width:Number(width),height:Number(height),frames:bootFrames }, 'hero-frames-initial');
+  const remainingPackUrl = frameAsset('heroTail', frames.slice(initialFrameCount), 'hero-frames-remaining');
 
   const tamilCharacters = [...new Set((source+'காரைக்குடி பல் மருத்துவமனை').match(/[\u0b80-\u0bff]/gu))].sort().join('') + ' ·—';
   const tamilFamily = 'family=Noto+Serif+Tamil:ital,wdth,wght@0,62.5..100,500..800;1,62.5..100,500..800';
@@ -38,6 +45,28 @@ function applyHomepage(source, out, services, asset) {
       'script.src=' + JSON.stringify(packUrl) + ';')
     .replace("const budget=(compactPack?18:33)*1024*1024;", "const budget=18*1024*1024;")
     .replace("    script.onload=()=>{", "    script.fetchPriority='low';\n    script.onload=()=>{")
+    .replace('  function loadVideoFallback(){', `  let requestedRemainingFrames=false;
+  function requestRemainingFrames(){
+    if(requestedRemainingFrames||videoFallback)return;
+    requestedRemainingFrames=true;
+    const script=document.createElement('script');
+    script.src=${JSON.stringify(remainingPackUrl)};
+    script.onload=()=>{
+      const tail=script.heroTail;
+      script.remove();
+      if(disposed||videoFallback||!framePack)return;
+      if(!Array.isArray(tail)||tail.length!==${frames.length-initialFrameCount}){loadVideoFallback();return;}
+      framePack.frames.splice(${initialFrameCount},tail.length,...tail);
+      queueMediaFrame();
+    };
+    script.onerror=()=>{script.remove();if(!disposed)loadVideoFallback();};
+    document.head.append(script);
+  }
+
+  function loadVideoFallback(){`)
+    .replace('frame<framePack.frames.length&&!frameCache.has(frame)', 'frame<framePack.frames.length&&Boolean(framePack.frames[frame])&&!frameCache.has(frame)')
+    .replace('    if(!framePack)return;\n\n    const exact=', '    if(!framePack)return;\n    if(p>0)requestRemainingFrames();\n\n    const exact=')
+    .replace("      showCanvas(true);\n      setMediaState('ready');\n    }\n    schedulePreparation();", "      if(p>0||canvasVisible)showCanvas(true);\n      setMediaState('ready');\n    }\n    if(p>0&&drawnFrame>=0)showCanvas(true);\n    schedulePreparation();")
     .replace("    if(mediaState==='idle')loadFramePack();", `    if(mediaState==='idle'){
       if(document.readyState!=='complete'&&p===0)return;
       loadFramePack();
