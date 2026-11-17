@@ -16,19 +16,36 @@ function applyHomepage(source, out, services, asset) {
   const posterUrl = asset('jpeg', poster[1], 'dental-clinic-hero');
   const packUrl = asset('js', Buffer.from('document.currentScript.heroPack=' + pack[1] + ';').toString('base64'), 'hero-frames');
 
+  const tamilCharacters = [...new Set((source+'காரைக்குடி பல் மருத்துவமனை').match(/[\u0b80-\u0bff]/gu))].sort().join('') + ' ·—';
+  const tamilFamily = 'family=Noto+Serif+Tamil:ital,wdth,wght@0,62.5..100,500..800;1,62.5..100,500..800';
   const link = slug => '/'+slug+'/';
   let page = source
     .replace(/<title>[\s\S]*?<meta content="summary" name="twitter:card"\/>/, () =>
       metadata(home) + '\n' + schema([...businessGraph(services), ...pageGraph(home)]))
+    .replace(/<link href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]+" rel="stylesheet"\/>/, original => {
+      const latin = original.replace(/&amp;family=Noto\+Serif\+Tamil:[^&"]+/, '');
+      return latin + '\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + tamilFamily + '&amp;display=swap&amp;text=' + encodeURIComponent(tamilCharacters) + '">';
+    })
     .replace(/<script>window\.__LOGO=[\s\S]*?<\/script>/, '<script>window.__LOGO="/favicon.png";</script>')
     .replace(pack[0], '')
     .replace(/script\.src=compactPack\?'assets\/hero-frames-compact\.js':'assets\/hero-frames-wide\.js';/,
       'script.src=' + JSON.stringify(packUrl) + ';')
     .replace("const budget=(compactPack?18:33)*1024*1024;", "const budget=18*1024*1024;")
+    .replace("    script.onload=()=>{", "    script.fetchPriority='low';\n    script.onload=()=>{")
+    .replace("    if(mediaState==='idle')loadFramePack();", `    if(mediaState==='idle'){
+      if(document.readyState!=='complete'&&p===0)return;
+      loadFramePack();
+    }`)
+    .replace('  <div class="hero-stage" id="heroStage">', `  <script>
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches && !matchMedia('(max-height: 320px)').matches) {
+      document.getElementById('heroTrack').classList.add('is-cinematic');
+    }
+  </script>
+  <div class="hero-stage" id="heroStage">`)
     .replace("    const compactPack=compact.matches||(navigator.deviceMemory||8)<=4;\n", '')
     .replace(/data-fallback-src="assets\/hero\.mp4"/, 'data-fallback-src="/assets/hero.mp4"')
     .replace('muted playsinline preload="auto"', `muted playsinline preload="metadata" poster="${posterUrl}"`)
-    .replace(/<title>[^<]+<\/title>/, match => match + '\n<link rel="preload" href="' + posterUrl + '" as="image">')
+    .replace(/<title>[^<]+<\/title>/, match => match + '\n<link rel="preload" href="' + posterUrl + '" as="image" fetchpriority="high">')
     .replace(/<div aria-hidden="true" id="pre">/, '<div aria-hidden="true" id="pre" class="done">')
     .replace(/<span class="chip chip-sm">✦ Advanced Dental Care in Karaikudi<\/span>/,
       '<h1 class="chip chip-sm"><span aria-hidden="true">✦&nbsp;</span>Dentist in Karaikudi</h1>')
@@ -36,7 +53,12 @@ function applyHomepage(source, out, services, asset) {
     .replace(/\.chapter h1\.ta-h/g, '.chapter h2.ta-h')
     .replace(/\.chapter h1(?![\w.-])/g, '.chapter .ta-h')
     .replace(/\.chapter h2(?![\w.-])/g, '.chapter h2:where(:not(.ta-h))')
-    .replace('</style></head>', '.chapter h1.chip{font-family:inherit}\n</style></head>')
+    .replace('</style></head>', `.chapter h1.chip{font-family:inherit}
+.is-cinematic .chapter[data-ch="0"]{opacity:1;visibility:visible;transform:translateY(-50%)}
+@media (max-width:820px), (orientation:landscape) and (max-height:600px) and (max-width:1100px){
+  .is-cinematic .chapter[data-ch="0"]{transform:none}
+}
+</style></head>`)
     .replace(/<!-- DOCTORS OVERLAY -->[\s\S]*?(?=<!-- FOOTER)/, '')
     .replace(/href="#doctors"/g, 'href="/doctors/"')
     .replace(/  \/\* DOCTORS OVERLAY \*\/[\s\S]*?(?=  \/\* everything that must be hidden)/, '')
@@ -97,8 +119,10 @@ function applyHomepage(source, out, services, asset) {
     .replace('Verified on Google', 'Reviews on Google');
 
   let serviceIndex = 0;
-  page = page.replace(/<button class="lm" type="button">Learn more<\/button>/g, () =>
-    '<a class="lm" href="' + services[serviceIndex++].path + '">Learn more</a>');
+  page = page.replace(/<button class="lm" type="button">Learn more<\/button>/g, () => {
+    const { name, path } = services[serviceIndex++];
+    return '<a class="lm" href="' + path + '">About ' + escape(name) + '</a>';
+  });
   if (serviceIndex !== services.length) throw new Error('Homepage service links and service list differ');
 
   const replacements = [
