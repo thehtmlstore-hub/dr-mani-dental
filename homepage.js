@@ -13,7 +13,10 @@ function applyHomepage(source, out, services, asset) {
   fs.writeFileSync(path.join(out, 'favicon.png'), Buffer.from(logo[1], 'base64'));
   fs.writeFileSync(path.join(out, 'clinic-team.jpg'), Buffer.from(team[1], 'base64'));
   const profilePhoto = asset('jpeg', founder[1], 'dr-s-manikandan');
-  const posterUrl = asset('jpeg', poster[1], 'dental-clinic-hero');
+  const mobilePoster = asset('webp', fs.readFileSync(path.join(__dirname,'source/dental-clinic-poster-1200.webp')).toString('base64'), 'dental-clinic-hero-mobile');
+  const posterUrl = asset('webp', fs.readFileSync(path.join(__dirname,'source/dental-clinic-poster-1920.webp')).toString('base64'), 'dental-clinic-hero');
+  const posterVariants = mobilePoster+' 1200w, '+posterUrl+' 1920w';
+  const posterSizes = '(max-width: 820px) min(180vw, 900px), 100vw';
   const packUrl = asset('js', Buffer.from('document.currentScript.heroPack=' + pack[1] + ';').toString('base64'), 'hero-frames');
 
   const tamilCharacters = [...new Set((source+'காரைக்குடி பல் மருத்துவமனை').match(/[\u0b80-\u0bff]/gu))].sort().join('') + ' ·—';
@@ -24,7 +27,10 @@ function applyHomepage(source, out, services, asset) {
       metadata(home) + '\n' + schema([...businessGraph(services), ...pageGraph(home)]))
     .replace(/<link href="https:\/\/fonts\.googleapis\.com\/css2\?[^"]+" rel="stylesheet"\/>/, original => {
       const latin = original.replace(/&amp;family=Noto\+Serif\+Tamil:[^&"]+/, '');
-      return latin + '\n<link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + tamilFamily + '&amp;display=swap&amp;text=' + encodeURIComponent(tamilCharacters) + '">';
+      const tamil = '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?' + tamilFamily + '&amp;display=swap&amp;text=' + encodeURIComponent(tamilCharacters) + '">';
+      const fontLinks = [latin,tamil];
+      return fontLinks.map(link => link.replace('rel="stylesheet"', `rel="preload" as="style" onload="this.onload=null;this.rel='stylesheet'"`)).join('\n')
+        + '\n<noscript>'+fontLinks.join('\n')+'</noscript>';
     })
     .replace(/<script>window\.__LOGO=[\s\S]*?<\/script>/, '<script>window.__LOGO="/favicon.png";</script>')
     .replace(pack[0], '')
@@ -44,8 +50,9 @@ function applyHomepage(source, out, services, asset) {
   <div class="hero-stage" id="heroStage">`)
     .replace("    const compactPack=compact.matches||(navigator.deviceMemory||8)<=4;\n", '')
     .replace(/data-fallback-src="assets\/hero\.mp4"/, 'data-fallback-src="/assets/hero.mp4"')
-    .replace('muted playsinline preload="auto"', `muted playsinline preload="metadata" poster="${posterUrl}"`)
-    .replace(/<title>[^<]+<\/title>/, match => match + '\n<link rel="preload" href="' + posterUrl + '" as="image" fetchpriority="high">')
+    .replace('muted playsinline preload="auto"', 'muted playsinline preload="metadata"')
+    .replace('    vid.src=vid.dataset.fallbackSrc;', '    vid.poster=media.querySelector("img").currentSrc;\n    vid.src=vid.dataset.fallbackSrc;')
+    .replace(/<title>[^<]+<\/title>/, match => match + `\n<link rel="preload" href="${posterUrl}" as="image" fetchpriority="high" imagesrcset="${posterVariants}" imagesizes="${posterSizes}">`)
     .replace(/<div aria-hidden="true" id="pre">/, '<div aria-hidden="true" id="pre" class="done">')
     .replace(/<span class="chip chip-sm">✦ Advanced Dental Care in Karaikudi<\/span>/,
       '<h1 class="chip chip-sm"><span aria-hidden="true">✦&nbsp;</span>Dentist in Karaikudi</h1>')
@@ -191,7 +198,7 @@ function applyHomepage(source, out, services, asset) {
     const match = tag.match(/src="data:image\/(jpeg|webp|png);base64,([\w+/=]+)"/);
     if (!match) return tag;
     if (match[2] === logo[1]) return tag.replace(match[0], 'src="/favicon.png" width="256" height="256"');
-    if (match[2] === poster[1]) return tag.replace(match[0], 'src="'+posterUrl+'" width="1920" height="1080" fetchpriority="high"');
+    if (match[2] === poster[1]) return tag.replace(match[0], `src="${posterUrl}" srcset="${posterVariants}" sizes="${posterSizes}" width="1920" height="1080" fetchpriority="high"`);
     const alt = tag.match(/alt="([^"]*)"/)?.[1] || 'clinic-photo';
     const filename = alt.toLowerCase().match(/[a-z0-9]+/g)?.slice(0, 7).join('-') || 'clinic-photo';
     const src = asset(match[1], match[2], filename);
