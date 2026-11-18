@@ -1,6 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const clinic = require('./clinic');
+const { initPreloader, initReveals } = require('./homepage-resilience');
 const { escape, metadata, home, businessGraph, pageGraph, schema } = require('./seo');
 
 function applyHomepage(source, out, services, asset) {
@@ -82,7 +83,14 @@ function applyHomepage(source, out, services, asset) {
     .replace('muted playsinline preload="auto"', 'muted playsinline preload="metadata"')
     .replace('    vid.src=vid.dataset.fallbackSrc;', '    vid.poster=media.querySelector("img").currentSrc;\n    vid.src=vid.dataset.fallbackSrc;')
     .replace(/<title>[^<]+<\/title>/, match => match + `\n<link rel="preload" href="${posterUrl}" as="image" fetchpriority="high" imagesrcset="${posterVariants}" imagesizes="${posterSizes}">`)
-    .replace(/<div aria-hidden="true" id="pre">/, '<div aria-hidden="true" id="pre" class="done">')
+    .replace('#pre{animation:preFailsafe .5s ease 1.8s forwards}', '#pre{animation:preFailsafe .5s ease 2s forwards}\n@media (prefers-reduced-motion:reduce){#pre{display:none}}')
+    .replace(/(<\/div>\s*<\/div>\s*)(?=<script>document\.querySelectorAll\('img\[data-logo\])/, match =>
+      match + `<script>(${initPreloader.toString()})();</script>\n`)
+    .replace("  document.getElementById('pre')?.classList.add('done');", '')
+    .replace(/(<script>\s*\(function\(\)\{\s*\/\* Fade the branded entrance)/, match =>
+      `<script>(${initReveals.toString()})();</script>\n` + match)
+    .replace("    stage.classList.toggle('stage-ready',state==='ready');", `    stage.classList.toggle('stage-ready',state==='ready');
+    if(state==='ready')document.dispatchEvent(new Event('clinic:hero-frame-ready'));`)
     .replace(/<span class="chip chip-sm">✦ Advanced Dental Care in Karaikudi<\/span>/,
       '<h1 class="chip chip-sm"><span aria-hidden="true">✦&nbsp;</span>Dentist in Karaikudi</h1>')
     .replace(/<h1 lang="ta" class="ta-h">([\s\S]*?)<\/h1>/, '<h2 lang="ta" class="ta-h">$1</h2>')
@@ -109,6 +117,7 @@ function applyHomepage(source, out, services, asset) {
     if(e.key==='Escape'&&document.body.classList.contains('nav-open')){setNav(false);burger.focus();}
   });
 `)
+    .replace(/  \/\* REVEAL \*\/[\s\S]*?(?=  \/\* deep link: \/#doctors)/, '')
     .replace(/  \/\* deep link: \/#doctors[^\n]*\n/, '')
     .replace(/\s*if \(isDocsOpen\(\)\) closeDocs\(null, true\);/, '')
     .replace(' && !isDocsOpen()', '')
