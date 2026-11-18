@@ -16,3 +16,5 @@ Baseline is GitHub main at 9a409362b5601c11c3dbc041be5a3a6fffff66d3. The local D
 The working environment could not resolve the public domains with curl, and web fetch did not return the homepage. Baseline raw observations above come from the exact local build inputs. Fresh raw HTTP comparisons, console/network logs, pixel diffs and before/after Lighthouse remain open. Archived deployment screenshots and historical scores cannot substitute for those checks.
 
 FAQPage serves structured access to the published FAQ. Google generally restricts FAQ rich results to well-known authoritative health or government sites. No rich-result or AI inclusion is assumed. See https://developers.google.com/search/docs/appearance/structured-data/faqpage.
+
+The new FAQ is limited to logistics. Existing clinical FAQ text is a release review item because replacing or removing those panels changes the approved visible content. No new clinical Q&A was added to a public page.
