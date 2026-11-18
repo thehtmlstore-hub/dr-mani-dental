@@ -11,6 +11,9 @@ const root = __dirname;
 const out = path.join(root, 'dist');
 fs.rmSync(out, { recursive:true, force:true });
 fs.mkdirSync(path.join(out, 'assets'), { recursive:true });
+for (const name of ['clinic-share.webp','clinic-icon-32.png','clinic-icon-180.png']) {
+  fs.copyFileSync(path.join(root,'source',name),path.join(out,'assets',name));
+}
 
 function asset(format, base64, name) {
   const bytes = Buffer.from(base64, 'base64');

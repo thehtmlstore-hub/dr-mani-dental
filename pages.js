@@ -23,7 +23,7 @@ const book = `<div class="info-actions">
 <a class="btn btn-ghost" href="tel:${clinic.telephone}">Call ${e(clinic.phone)}</a>
 <a class="btn btn-ghost" href="${clinic.whatsapp}">WhatsApp</a>
 </div>`;
-const lastmod = '2026-11-17';
+const lastmod = '2026-11-18';
 
 function sectionContent(page) {
   return page.sections.map(({ heading, paragraphs }) => {
@@ -94,8 +94,15 @@ function allPages(profilePhoto) {
     description:'Explore nine dental services in Sekkalai, including general dentistry, implants, root canal treatment, braces and dentistry for children.',
     body:h2('Explore our dental services') + list(serviceLinks) + h2('Plan a consultation') + p('Talk to the team about which appointment is suitable for you. The clinic is in Sekkalai, Karaikudi.') + list([navigation[2],navigation[3],navigation[4]]),
   };
+  const about = {
+    ...team, path:'/about/', h1:'About Our Dental Clinic in Karaikudi',
+    title:"About Dr. Mani's Dental Clinic | Karaikudi",
+    description:"Learn about Dr. Mani's Multispeciality Dental Center and its dental services in Sekkalai, Karaikudi.",
+    body:h2('Visit us in Sekkalai') + p(clinic.name + ' is on Sekkalai Road, opposite Jeyakumaran Furniture.') +
+      list([navigation[2], navigation[1], navigation[3]]),
+  };
   const policies = Object.entries(clinic.policies).map(([slug,[h1,,summary]]) => ({
-    path:'/'+slug+'/', h1, title:h1+" | Dr. Mani's Dental Clinic", noindex:true,
+    path:'/'+slug+'/', h1, title:h1+" | Dr. Mani's", noindex:true,
     description:summary,
     body:p(summary) + h2('Contact the clinic') + p('For the complete policy or questions about how it applies to your appointment, contact the clinic directly.'),
   }));
@@ -104,7 +111,7 @@ function allPages(profilePhoto) {
     description:'Find dental services, directions or booking information for our Sekkalai clinic in Karaikudi.',
     body:p('The address you entered could not be found.') + list(navigation),
   };
-  return [serviceIndex, ...servicesContent(), team, profile, locationPage, blog, ...policies, notFound].map(page => ({lastmod,...page}));
+  return [serviceIndex, ...servicesContent(), team, profile, about, locationPage, blog, ...policies, notFound].map(page => ({lastmod,...page}));
 }
 
 function draftArticles() {
