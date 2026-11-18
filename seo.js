@@ -57,12 +57,11 @@ function businessGraph(services) {
       '@type': ['Dentist', 'MedicalBusiness', 'MedicalClinic'],
       '@id': clinic.clinicId,
       name: clinic.name,
-      alternateName: ["Dr. Mani's Dental Clinic", 'Manis Dental Clinic', 'Mani Dental Karaikudi'],
+      alternateName: ['Dr Manis Dental', "Dr. Mani's Dental Center", "Dr. Mani's Dental Clinic", 'Manis Dental Clinic', 'Mani Dental Karaikudi'],
       url: clinic.origin + '/',
       logo: clinic.origin + '/favicon.png',
       image: clinic.origin + '/clinic-team.jpg',
       telephone: clinic.phone,
-      foundingDate: '2017',
       founder: { '@id': clinic.founderId },
       address: {
         '@type': 'PostalAddress',
@@ -80,12 +79,15 @@ function businessGraph(services) {
       },
       medicalSpecialty: 'https://schema.org/Dentistry',
       availableService: services.map(({ name }) => ({ '@type': 'MedicalProcedure', name })),
-      sameAs: [clinic.instagram, clinic.facebook],
+      areaServed: ['Karaikudi', 'Sivaganga district'],
+      hasMap: clinic.map,
+      sameAs: [clinic.map, clinic.instagram, clinic.facebook],
     },
     {
       '@type': 'Person',
       '@id': clinic.founderId,
       name: clinic.founder,
+      jobTitle: 'Founder',
       url: clinic.origin + clinic.profile,
       worksFor: { '@id': clinic.clinicId },
     },
@@ -123,9 +125,21 @@ function pageGraph(page, breadcrumbs = []) {
   }];
 }
 
+function faqGraph(page) {
+  if (!page.faq) return [];
+  return [{
+    '@type': 'FAQPage',
+    '@id': clinic.origin + page.path + '#webpage',
+    mainEntity: page.faq.map(({ question, answer, language }) => ({
+      '@type': 'Question', name: question, inLanguage: language,
+      acceptedAnswer: { '@type': 'Answer', text: answer, inLanguage: language },
+    })),
+  }];
+}
+
 function schema(graph) {
   const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }, null, 2);
   return `<script type="application/ld+json">${json.replaceAll('<', '\\u003c')}</script>`;
 }
 
-module.exports = { escape, metadata, home, businessGraph, pageGraph, schema };
+module.exports = { escape, metadata, home, businessGraph, pageGraph, faqGraph, schema };

@@ -14,7 +14,7 @@ const founderId = origin + profile + '#person';
 const specialties = ['Periodontics & Implants', 'Oral & Maxillofacial Surgery', 'Pedodontics'];
 const instagram = 'https://www.instagram.com/drmanis_dental_karaikudi';
 const facebook = 'https://www.facebook.com/p/DrManis-Multispeciality-Dental-Center-100066769136105/';
-const map = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(address);
+const map = 'https://www.google.com/maps/place/?q=place_id:ChIJSVBa1mBnADsR_ZiisGrVwLU';
 
 const policies = {
   'privacy-policy': ['Privacy Policy', 'Website Privacy', 'The appointment form opens a WhatsApp message. You decide whether to send it. You can also call the clinic directly to request a visit.'],
