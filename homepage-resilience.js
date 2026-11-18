@@ -41,4 +41,20 @@ function initReveals() {
   }
 }
 
-module.exports = { initPreloader, initReveals };
+function initCarousels() {
+  try {
+    for (const track of document.querySelectorAll('.mq-track,.rev-track,.ba-track')) {
+      for (const item of [...track.children]) {
+        const clone = item.cloneNode(true);
+        clone.setAttribute('aria-hidden','true');
+        clone.querySelectorAll('a,button,[tabindex]').forEach(element => element.tabIndex = -1);
+        track.appendChild(clone);
+      }
+      track.classList.add('loop-ready');
+    }
+  } catch (error) {
+    console.error('[homepage:carousels]',error);
+  }
+}
+
+module.exports = { initPreloader, initReveals, initCarousels };

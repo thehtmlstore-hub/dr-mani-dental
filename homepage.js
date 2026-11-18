@@ -1,7 +1,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const clinic = require('./clinic');
-const { initPreloader, initReveals } = require('./homepage-resilience');
+const { initPreloader, initReveals, initCarousels } = require('./homepage-resilience');
 const { escape, metadata, home, businessGraph, pageGraph, schema } = require('./seo');
 
 function applyHomepage(source, out, services, asset) {
@@ -88,7 +88,7 @@ function applyHomepage(source, out, services, asset) {
       match + `<script>(${initPreloader.toString()})();</script>\n`)
     .replace("  document.getElementById('pre')?.classList.add('done');", '')
     .replace(/(<script>\s*\(function\(\)\{\s*\/\* Fade the branded entrance)/, match =>
-      `<script>(${initReveals.toString()})();</script>\n` + match)
+      `<script>(${initReveals.toString()})();(${initCarousels.toString()})();</script>\n` + match)
     .replace("    stage.classList.toggle('stage-ready',state==='ready');", `    stage.classList.toggle('stage-ready',state==='ready');
     if(state==='ready')document.dispatchEvent(new Event('clinic:hero-frame-ready'));`)
     .replace(/<span class="chip chip-sm">✦ Advanced Dental Care in Karaikudi<\/span>/,
@@ -102,7 +102,10 @@ function applyHomepage(source, out, services, asset) {
   .rv.in:not(:focus-within){animation:rv-enter .8s cubic-bezier(.2,.7,.2,1) var(--d,0s)}
   @keyframes rv-enter{from{opacity:.65;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 }`)
-    .replace('</style></head>', `.chapter h1.chip{font-family:inherit}
+    .replace('</style></head>', `
+.mq-track:not(.loop-ready),.rev-track:not(.loop-ready),.ba-track:not(.loop-ready){animation:none}
+.marquee:has(.mq-track:not(.loop-ready)),.rev-marquee:has(.rev-track:not(.loop-ready)),.ba-roll:has(.ba-track:not(.loop-ready)){overflow-x:auto}
+.chapter h1.chip{font-family:inherit}
 .is-cinematic .chapter[data-ch="0"]{opacity:1;visibility:visible;transform:translateY(-50%)}
 @media (max-width:820px), (orientation:landscape) and (max-height:600px) and (max-width:1100px){
   .is-cinematic .chapter[data-ch="0"]{transform:none}
@@ -133,7 +136,8 @@ function applyHomepage(source, out, services, asset) {
       return '  const POLICIES = '+JSON.stringify(policies)+';';
     })
     .replace(/href="#([a-z-]+)" data-policy="\1"(?: data-route="[^"]+")?/g, (_, slug) => 'href="'+link(slug)+'"')
-    .replace('if (POLICIES[cleanedSlug]) {', "if (rawHref.startsWith('#') && POLICIES[cleanedSlug]) {")
+    .replace("const cleanedSlug = rawHref.replace(/^[#\\/]+/, '');", "const cleanedSlug = rawHref.replace(/^[#\\/]+|\\/+$/g, '');")
+    .replace('if (POLICIES[cleanedSlug]) {', "if (/^[#\\/](?!\\/)/.test(rawHref) && Object.hasOwn(POLICIES, cleanedSlug)) {")
     .replace(/<span class="ph-tag">\[[A-Z /-]+\]<\/span>/g, '')
     .replace('<h1 id="legalTitle">Privacy Policy</h1>', '<h2 id="legalTitle">Privacy Policy</h2>')
     .replaceAll('.legal-hero h1', '.legal-hero #legalTitle')
@@ -167,6 +171,11 @@ function applyHomepage(source, out, services, asset) {
     .replace(/<b><span class="g-count-val">121<\/span>\+<\/b><small>Google Reviews<\/small>/, '<b>6</b><small>Days Open Weekly</small>')
     .replace('title="Live data synced with Google Maps listing"', 'title="Open the clinic’s reviews on Google"')
     .replace('Verified on Google', 'Reviews on Google');
+
+  page = page
+    .replace(/(<div class="mq-track">[^]*?)\n(?:<span aria-hidden="true">[^<]*<\/span>)+(?=\n<\/div>)/, '$1')
+    .replace(/^<div aria-hidden="true" class="ba-card">\r?\n[^]*?<div class="ba-info">[^\n]*<\/div>\r?\n<\/div>\r?\n/gm, '')
+    .replace(/^\s*<article class="rev" aria-hidden="true">[^]*?<\/article>/gm, '');
 
   let serviceIndex = 0;
   page = page.replace(/<button class="lm" type="button">Learn more<\/button>/g, () => {
