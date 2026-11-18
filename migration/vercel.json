@@ -6,113 +6,203 @@
       "statusCode": 301
     },
     {
-      "source": "/index.php",
+      "source": "/:legacy([iI][nN][dD][eE][xX]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/",
       "statusCode": 301
     },
     {
-      "source": "/about.php",
-      "destination": "https://www.drmanisdentalkaraikudi.com/doctors/",
+      "source": "/:legacy([iI][nN][dD][eE][xX]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/",
       "statusCode": 301
     },
     {
-      "source": "/appointment.php",
-      "destination": "https://www.drmanisdentalkaraikudi.com/#booking",
+      "source": "/:legacy([aA][bB][oO][uU][tT]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/about/",
       "statusCode": 301
     },
     {
-      "source": "/contact.php",
-      "destination": "https://www.drmanisdentalkaraikudi.com/dentist-in-sekkalai-karaikudi/",
+      "source": "/:legacy([aA][bB][oO][uU][tT]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/about/",
       "statusCode": 301
     },
     {
-      "source": "/facility.php",
-      "destination": "https://www.drmanisdentalkaraikudi.com/#clinic",
+      "source": "/:legacy([aA][pP][pP][oO][iI][nN][tT][mM][eE][nN][tT]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/contact/",
       "statusCode": 301
     },
     {
-      "source": "/gallery.php",
-      "destination": "https://www.drmanisdentalkaraikudi.com/#results",
+      "source": "/:legacy([aA][pP][pP][oO][iI][nN][tT][mM][eE][nN][tT]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/contact/",
       "statusCode": 301
     },
     {
-      "source": "/treatment.php",
+      "source": "/:legacy([cC][oO][nN][tT][aA][cC][tT]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/contact/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([cC][oO][nN][tT][aA][cC][tT]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/contact/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([fF][aA][cC][iI][lL][iI][tT][yY]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/about/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([fF][aA][cC][iI][lL][iI][tT][yY]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/about/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([gG][aA][lL][lL][eE][rR][yY]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/about/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([gG][aA][lL][lL][eE][rR][yY]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/about/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([tT][rR][eE][aA][tT][mM][eE][nN][tT]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/",
       "statusCode": 301
     },
     {
-      "source": "/treatments.php",
+      "source": "/:legacy([tT][rR][eE][aA][tT][mM][eE][nN][tT]\\.[pP][hH][pP])/",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/",
       "statusCode": 301
     },
     {
-      "source": "/root_canal.php",
+      "source": "/:legacy([tT][rR][eE][aA][tT][mM][eE][nN][tT][sS]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([tT][rR][eE][aA][tT][mM][eE][nN][tT][sS]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([rR][oO][oO][tT]_[cC][aA][nN][aA][lL]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/root-canal-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/dentures.php",
+      "source": "/:legacy([rR][oO][oO][tT]_[cC][aA][nN][aA][lL]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/root-canal-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([dD][eE][nN][tT][uU][rR][eE][sS]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/dental-implants-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/implant.php",
+      "source": "/:legacy([dD][eE][nN][tT][uU][rR][eE][sS]\\.[pP][hH][pP])/",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/dental-implants-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/whitening.php",
+      "source": "/:legacy([iI][mM][pP][lL][aA][nN][tT]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/dental-implants-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([iI][mM][pP][lL][aA][nN][tT]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/dental-implants-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([wW][hH][iI][tT][eE][nN][iI][nN][gG]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/cosmetic-dentistry-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/full_mouth.php",
+      "source": "/:legacy([wW][hH][iI][tT][eE][nN][iI][nN][gG]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/cosmetic-dentistry-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([fF][uU][lL][lL]_[mM][oO][uU][tT][hH]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/dental-implants-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/kids.php",
+      "source": "/:legacy([fF][uU][lL][lL]_[mM][oO][uU][tT][hH]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/dental-implants-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([kK][iI][dD][sS]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/pedodontics-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/Kids.php",
+      "source": "/:legacy([kK][iI][dD][sS]\\.[pP][hH][pP])/",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/pedodontics-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/orthodontic.php",
+      "source": "/:legacy([oO][rR][tT][hH][oO][dD][oO][nN][tT][iI][cC]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/braces-aligners-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/gums.php",
+      "source": "/:legacy([oO][rR][tT][hH][oO][dD][oO][nN][tT][iI][cC]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/braces-aligners-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([gG][uU][mM][sS]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/periodontal-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/filling.php",
+      "source": "/:legacy([gG][uU][mM][sS]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/periodontal-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([fF][iI][lL][lL][iI][nN][gG]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/general-dentistry-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/ceramic_crown.php",
+      "source": "/:legacy([fF][iI][lL][lL][iI][nN][gG]\\.[pP][hH][pP])/",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/general-dentistry-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/x-ray.php",
-      "destination": "https://www.drmanisdentalkaraikudi.com/#booking",
+      "source": "/:legacy([cC][eE][rR][aA][mM][iI][cC]_[cC][rR][oO][wW][nN]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/cosmetic-dentistry-karaikudi/",
       "statusCode": 301
     },
     {
-      "source": "/laser.php",
+      "source": "/:legacy([cC][eE][rR][aA][mM][iI][cC]_[cC][rR][oO][wW][nN]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/cosmetic-dentistry-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([xX]-[rR][aA][yY]\\.[pP][hH][pP])",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/general-dentistry-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([xX]-[rR][aA][yY]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/general-dentistry-karaikudi/",
+      "statusCode": 301
+    },
+    {
+      "source": "/:legacy([lL][aA][sS][eE][rR]\\.[pP][hH][pP])",
       "destination": "https://www.drmanisdentalkaraikudi.com/services/",
       "statusCode": 301
     },
     {
-      "source": "/:path*",
-      "destination": "https://www.drmanisdentalkaraikudi.com/",
+      "source": "/:legacy([lL][aA][sS][eE][rR]\\.[pP][hH][pP])/",
+      "destination": "https://www.drmanisdentalkaraikudi.com/services/",
       "statusCode": 301
     }
   ]

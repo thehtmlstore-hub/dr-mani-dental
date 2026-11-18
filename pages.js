@@ -1,6 +1,7 @@
 const clinic = require('./clinic');
 const { services, articles } = require('./content');
-const { escape: e, metadata, businessGraph, pageGraph, schema } = require('./seo');
+const faq = require('./faq');
+const { escape: e, metadata, businessGraph, pageGraph, faqGraph, schema } = require('./seo');
 
 const serviceLink = slug => {
   const service = services.find(item => item.slug === slug);
@@ -23,7 +24,7 @@ const book = `<div class="info-actions">
 <a class="btn btn-ghost" href="tel:${clinic.telephone}">Call ${e(clinic.phone)}</a>
 <a class="btn btn-ghost" href="${clinic.whatsapp}">WhatsApp</a>
 </div>`;
-const lastmod = '2026-11-17';
+const lastmod = '2026-11-18';
 
 function sectionContent(page) {
   return page.sections.map(({ heading, paragraphs }) => {
@@ -46,7 +47,8 @@ function servicesContent() {
     h1: (service.slug === 'periodontal' ? 'Periodontal Care' : service.name === 'Root Canal' ? 'Root Canal Treatment' : service.name) + ' in Karaikudi',
     title: (service.slug === 'periodontal' ? 'Periodontal Care' : service.name) + " in Karaikudi | Dr. Mani's",
     parent: navigation[1],
-    body: sectionContent(service) + h2('Related dental services') + list(service.related.map(serviceLink))
+    body: p(`${clinic.name} in Sekkalai, Karaikudi, lists ${service.name} among its dental services. Contact the clinic on ${clinic.phone} to ask about appointments and what to bring. The front desk can help you decide which type of visit to request.`)
+      + sectionContent(service) + h2('Related dental services') + list(service.related.map(serviceLink))
       + h2('Ask a dentist about your options') + p('For an individual assessment, book an appointment at the clinic in Sekkalai. The clinic was founded by '+clinic.founder+'.') + list([[clinic.founder,clinic.profile],['Visit Sekkalai Clinic',clinic.location],['Patient guides','/blog/']])
       + sources(service),
   }));
@@ -94,9 +96,22 @@ function allPages(profilePhoto) {
     description:'Explore nine dental services in Sekkalai, including general dentistry, implants, root canal treatment, braces and dentistry for children.',
     body:h2('Explore our dental services') + list(serviceLinks) + h2('Plan a consultation') + p('Talk to the team about which appointment is suitable for you. The clinic is in Sekkalai, Karaikudi.') + list([navigation[2],navigation[3],navigation[4]]),
   };
+  const about = {
+    ...team, path:'/about/', h1:'About Our Dental Clinic in Karaikudi',
+    title:"About Dr. Mani's Dental Clinic | Karaikudi",
+    description:"Learn about Dr. Mani's Multispeciality Dental Center and its dental services in Sekkalai, Karaikudi.",
+    body:h2('Visit us in Sekkalai') + p(clinic.name + ' is on Sekkalai Road, opposite Jeyakumaran Furniture.') +
+      list([navigation[2], navigation[1], navigation[3]]),
+  };
+  const faqPage = {
+    path:'/faq/', h1:'Dental Clinic FAQs in Karaikudi', title:"Dental Clinic FAQs | Dr. Mani's, Karaikudi",
+    description:'Find clinic hours, address, parking guidance and appointment information in English and Tamil.',
+    faq, body:faq.map(({ question, answer, language }) =>
+      `<section lang="${language}"><h2>${e(question)}</h2>${p(answer)}</section>`).join(''),
+  };
   const policies = Object.entries(clinic.policies).map(([slug,[h1,,summary]]) => ({
-    path:'/'+slug+'/', h1, title:h1+" | Dr. Mani's Dental Clinic", noindex:true,
-    description:summary,
+    path:'/'+slug+'/', h1, title:h1+" | Dr. Mani's", noindex:true,
+    description:slug === 'patient-rights' ? 'Ask your dentist about treatment options, alternatives, follow-up and any concerns before treatment.' : summary,
     body:p(summary) + h2('Contact the clinic') + p('For the complete policy or questions about how it applies to your appointment, contact the clinic directly.'),
   }));
   const notFound = {
@@ -104,7 +119,7 @@ function allPages(profilePhoto) {
     description:'Find dental services, directions or booking information for our Sekkalai clinic in Karaikudi.',
     body:p('The address you entered could not be found.') + list(navigation),
   };
-  return [serviceIndex, ...servicesContent(), team, profile, locationPage, blog, ...policies, notFound].map(page => ({lastmod,...page}));
+  return [serviceIndex, ...servicesContent(), team, profile, about, locationPage, blog, faqPage, ...policies, notFound].map(page => ({lastmod,...page}));
 }
 
 function draftArticles() {
@@ -116,7 +131,7 @@ function draftArticles() {
 
 function render(page) {
   const breadcrumbs = [['Home','/'], ...(page.parent ? [page.parent] : []), [page.h1,page.path]];
-  const graph = [...businessGraph(services), ...pageGraph(page,breadcrumbs)];
+  const graph = [...businessGraph(services), ...pageGraph(page,breadcrumbs), ...faqGraph(page)];
   return `<!doctype html>
 <html lang="en-IN">
 <head>
@@ -147,7 +162,7 @@ ${book}
 <address>${e(clinic.address)}</address>
 <p>${e(clinic.hours)}</p>
 <p><a href="tel:${clinic.telephone}">${e(clinic.phone)}</a> · <a href="${clinic.whatsapp}">WhatsApp</a></p>
-<nav aria-label="Policies">${policyLinks.map(a).join('')}</nav>
+<nav aria-label="Policies">${policyLinks.map(a).join('') + a(['Clinic FAQs','/faq/'])}</nav>
 </div></footer>
 </body></html>`;
 }

@@ -7,14 +7,58 @@
   "redirects": [
     {
       "source": "/:path*",
-      "has": [{ "type": "host", "value": "drmanisdentalkaraikudi.com" }],
+      "has": [
+        {
+          "type": "host",
+          "value": "drmanisdentalkaraikudi.com"
+        }
+      ],
       "destination": "https://www.drmanisdentalkaraikudi.com/:path*",
       "statusCode": 301
     },
-    { "source": "/manidental2", "destination": "/", "statusCode": 301 }
+    {
+      "source": "/manidental2",
+      "destination": "/",
+      "statusCode": 301
+    },
+    {
+      "source": "/dentist-in-sekkalai-karaikudi",
+      "destination": "/contact/",
+      "statusCode": 301
+    },
+    {
+      "source": "/doctors/dr-s-manikandan",
+      "destination": "/doctors/dr-manikandan/",
+      "statusCode": 301
+    }
   ],
   "headers": [
-    { "source": "/assets/:file", "headers": [{ "key": "Cache-Control", "value": "public, max-age=31536000, immutable" }] },
-    { "source": "/assets/hero.mp4", "headers": [{ "key": "Cache-Control", "value": "public, max-age=86400" }] }
+    {
+      "source": "/assets/clinic-:file",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/assets/:file",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    },
+    {
+      "source": "/assets/hero.mp4",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
+      ]
+    }
   ]
 }
