@@ -18,3 +18,23 @@ The working environment could not resolve the public domains with curl, and web 
 FAQPage serves structured access to the published FAQ. Google generally restricts FAQ rich results to well-known authoritative health or government sites. No rich-result or AI inclusion is assumed. See https://developers.google.com/search/docs/appearance/structured-data/faqpage.
 
 The new FAQ is limited to logistics. Existing clinical FAQ text is a release review item because replacing or removing those panels changes the approved visible content. No new clinical Q&A was added to a public page.
+
+## Branch verification
+
+The local build before workspace disconnect emitted 28 HTML files and 17 indexable routes. Its homepage was 275,755 bytes. Static checks passed for canonical, H1, title/description limits, JSON-LD syntax, 16 matching English/Tamil FAQ entries, 22 known redirects and duplicate carousel removal. Three independent preloader tests passed. The last patches and handoff scripts were recovered after disconnect. Retest the exact branch preview before release.
+
+| Mobile audit | Previous main baseline | Branch |
+| --- | --- | --- |
+| Lighthouse Performance | 90 | Fresh run pending |
+| Lighthouse SEO | 100 | Fresh run pending |
+| LCP | 3.6 s | Fresh run pending |
+| CLS | 0.009 | Fresh run pending |
+| Field INP | Unavailable | Unavailable |
+
+## Release gates
+
+- Main already serves a small static page with external media. The attached monolith remains the legacy visual input. Main's visible eyebrow, team directory and policy adjustments predate this branch. Returning to the legacy layout or overlay would change the deployed design and may expose unverified doctor details. Review this before merge.
+- The original branded overlay was restored. The independent reveal uses visible-by-default content, so ordinary content is available without waiting for a timer.
+- The new FAQ is logistics only. Existing clinical Q&A and visible founding claims require a design and clinic decision before merge. Removed unverified founding date from JSON-LD. See CLIENT-CONFIRM.md.
+- The new share image and icons are metadata-stripped. Blanket source-photo conversion, critical-font self-hosting, grouped feature isolation and exact inline/video/canvas comparisons await visual and runtime verification.
+- Fresh Lighthouse, public redirect status and compression, exact live/build SHA comparison, external schema validator results and 390px/1440px screenshot parity remain open. The workspace did not resolve public DNS or run Playwright.

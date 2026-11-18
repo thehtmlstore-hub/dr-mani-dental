@@ -111,7 +111,7 @@ function allPages(profilePhoto) {
   };
   const policies = Object.entries(clinic.policies).map(([slug,[h1,,summary]]) => ({
     path:'/'+slug+'/', h1, title:h1+" | Dr. Mani's", noindex:true,
-    description:summary,
+    description:slug === 'patient-rights' ? 'Ask your dentist about treatment options, alternatives, follow-up and any concerns before treatment.' : summary,
     body:p(summary) + h2('Contact the clinic') + p('For the complete policy or questions about how it applies to your appointment, contact the clinic directly.'),
   }));
   const notFound = {
